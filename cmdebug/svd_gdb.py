@@ -117,7 +117,7 @@ class SVD(gdb.Command):
         gdb.write("Registers in %s:\n" % container_name)
         reg_list = []
         for r in regs_iter:
-            if r.readable():
+            if r.readable() and (form != 'n'):
                 try:
                     data = self.read(r.address(), r.size)
                     data = self.format(data, form, r.size)
@@ -143,7 +143,7 @@ class SVD(gdb.Command):
     def _print_register_fields(self, container_name, form, register):
         gdb.write("Fields in {}:\n".format(container_name))
         fields = register.fields
-        if not register.readable():
+        if not register.readable() or (form == 'n'):
             data = 0
         else:
             data = self.read(register.address(), register.size)
@@ -202,7 +202,7 @@ class SVD(gdb.Command):
             gdb.write("\tDisplay the fields in that register\n")
             gdb.write("svd/[format_character] ...\n")
             gdb.write("\tFormat values using that character\n")
-            gdb.write("\td(default):decimal, x: hex, o: octal, b: binary\n")
+            gdb.write("\td(default):decimal, x: hex, o: octal, b: binary, n: no access\n")
             gdb.write("\n")
             gdb.write(
                 "Both prefix matching and case-insensitive matching is supported for peripherals, registers, clusters and fields.\n")
