@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 #
 # Script to interact with external SPI flash
-# on STM32 microcontrollers
 #
 
 import gdb
 import re
-import svd_hw
+import cmdebug.svd_hw
 
 class GPIO:
 

@@ -133,6 +133,7 @@ class SVDFile:
         periph = root.peripherals.getchildren()
         self.peripherals = SmartDict()
         self.base_address = 0
+        self.name = root.name
 
         # XML elements
         for p in periph:
