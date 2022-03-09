@@ -1,3 +1,5 @@
+NOTE: This is a branch that extends PyCortexMDebug to allow access to peripherals via python. The goal is to provide the ability to access external flash and devices while within a GDB session in a target independent way (Cortex-M) only.
+
 PyCortexMDebug
 ==============
 
