@@ -92,24 +92,14 @@ class LoadSVD(gdb.Command):
         except Exception as e:
             raise gdb.GdbError("Could not load SVD file {} : {}...\n".format(f, e))
 
-        # Load base peripherals
-        import cmdebug.periph
-
-        # Load best match vendor peripheral access class
-        for n in range (len (name), 1, -1):
-
-            # Try loading the peripheral access classes
-            try:
-                __import__ ("cmdebug.vendor.{}".format(name[0:n]))
-                gdb.write ("Loaded vendor drivers: {}\n".format (name[0:n]))
-                break
-            except:
-                continue
+        # Load vendor specific drivers
+        from cmdebug.vendor import VendorInit
+        VendorInit (name)
+        gdb.write ("Loaded vendor drivers\n")
 
         # Load common driver classes
         import cmdebug.driver
         gdb.write ("Loaded device drivers\n")
-
 
 if __name__ == "__main__":
     

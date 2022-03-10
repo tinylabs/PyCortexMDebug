@@ -6,7 +6,7 @@
 
 import gdb
 import re
-import svd_hw
+import cmdebug.svd_hw
 
 class SPI:
 
