@@ -11,18 +11,17 @@
 import os
 import importlib
 
-# Common peripheral names
-periphs = ['GPIO', 'SPI']
+from cmdebug.periph import get_periphs
 
-def VendorPeriph (name, periph):
+def VendorMod (periph, name=''):
 
     # Instantiate dict cache
-    if not hasattr (VendorPeriph, 'periph'):
-        VendorPeriph.periph = {}
+    if not hasattr (VendorMod, 'mod'):
+        VendorMod.mod = {}
 
     # Return cached object
-    if periph in VendorPeriph.periph:
-        return VendorPeriph.periph[periph]
+    if periph in VendorMod.mod:
+        return VendorMod.mod[periph]
     
     # Load best match vendor peripheral access module
     for n in range (len (name), 1, -1):
@@ -30,16 +29,36 @@ def VendorPeriph (name, periph):
         if os.path.exists (path):
             mod = importlib.import_module \
                 ('cmdebug.vendor.{}'.format (name[0:n]))
+
+            # Check if peripheral is defined in module
             if hasattr (mod, name[0:n] + '_' + periph):
-                p = getattr (mod, name[0:n] + '_' + periph)
-                VendorPeriph.periph[periph] = p
-                return p
+                print ('Loaded: {} {}'.format (name[0:n], periph))
+                # Store common name => [mod, name]
+                VendorMod.mod[periph] = [mod, name[0:n]]
+                return [mod, name[0:n]]
+        
     # Not found
     return None
 
+
+def VendorPeriph (periph):
+
+    # Get mod
+    mod, name = VendorMod (periph)
+    
+    # Check for periph return peripheral class
+    if mod and hasattr (mod, name + '_' + periph):
+        p = getattr (mod, name + '_' + periph)
+        return p
+
+    # Not found
+    return None
+
+# Load all peripherals
 def VendorInit (name):
-    for periph in periphs:
-        p = VendorPeriph (name, periph)
-        if p:
-            # Instantiate peripheral
-            p ()
+    for periph in get_periphs():
+        VendorMod (periph, name)
+
+    # Init chipset
+    chip = VendorPeriph ('Chipset')
+    chip (name)

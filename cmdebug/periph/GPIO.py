@@ -32,49 +32,59 @@ class GPIO:
         self.base = svd_hw().find (self.get_port())
         
         # Get GPIO fields
-        self.mode = self.base.find ('moder{}'.format(self.pin))
-        self.otype = self.base.find ('ot{}'.format(self.pin))
-        self.pull = self.base.find ('pupdr{}'.format(self.pin))
-        self.inp = self.base.find ('idr{}'.format(self.pin))
-        self.out = self.base.find ('odr{}'.format(self.pin))
+        self.mode = self.base.find (self.reg_map['mode'].format(self.pin))
+        self.ptype = self.base.find (self.reg_map['type'].format(self.pin))
+        self.pull = self.base.find (self.reg_map['pull'].format(self.pin))
+        self.inp = self.base.find (self.reg_map['inp'].format(self.pin))
+        self.out = self.base.find (self.reg_map['out'].format(self.pin))
         
     def get_port (self):
         return 'gpio{}'.format (self.port)
-    
-    def config (self, cfg):
-        pass
 
+    # Take config dict and call corresponding functions
+    def config (self, cfg={}):
+        for key in ['mode', 'pull', 'type']:
+            if key in cfg.keys():
+                pass
+
+    # Set pin high
     def set (self):
         self.out.set (1)
 
+    # Set pin low
     def clr (self):
         self.out.set (0)
 
+    # Get value of pin
     def val (self):
         return self.inp.get ()
-    
-    def usage (self, cmd=''):
 
-        if cmd == 'config':
-            gdb.write ('Usage: spiflash config cs=PBn spi=PBx,PBy,PBz\n')
-        elif cmd == 'read':
-            gdb.write ('Usage: spiflash read <addr> <len> [filename]\n')
-        else:
-            pass
-        
-    def invoke (self, args, from_tty):
+    # Enumerate GPIOs
+    def __getitem__ (self):
+        pass
 
-        # Check usage
-        if args == None:
-            self.usage ()
-            return
-        
-        # Parse args
-        args = args.split (' ')
-        cmd = args.pop (0).lower()
-        
-        
+    def __iter__ (self):
+        pass
 
-# Register command when file is sourced
-if __name__ == '__main__':
-    GPIO ()
+    def __next__ (self):
+        pass
+
+'''    
+from cmdebug.utils.GDBCommand import GDBCommand
+from cmdebug.vendor import VendorPeriph
+
+class GPIOCommand (GDBCommand):
+    def __init__ (self):
+
+        # Get pins class
+        gpio = VendorPeriph ('GPIO')
+        
+        # Get derived class
+        super().__init__ ('gpio',
+                          [
+                              [],                    # Arbitrary name
+                              [ x for x in gpio())
+                          ])
+
+
+'''
